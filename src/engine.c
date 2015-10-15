@@ -1,12 +1,8 @@
 #include "engine.h"
 
-typedef enum instruction_type {
-	INSTRUCTION_TYPE_UNKNOWN,
-	INSTRUCTION_TYPE_SHIFT_MOV,
-	INSTRUCTION_TYPE_ADD_SUB,
-	INSTRUCTION_TYPE_MOV,
-	INSTRUCTION_TYPE_ALU,
-} instruction_type_t;
+#define MAX_LEN 64
+
+char thumb_instruction[MAX_LEN];
 
 static typedef char *(*disassemble_func)(uint16_t);
 
@@ -42,8 +38,39 @@ char *engine_get_assembly(uint16_t opcode)
 	return disassembler_vector[opcode_identifier](opcode);
 }
 
-// TODO: define the disassembly functions
 static char *disassemble_mov_shift_reg(uint16_t opcode)
 {
-	
+	uint16_t hold;
+	int i = 0;
+
+	// isolate opertion bits 11 and 12
+	hold = ((opcode & 0x1800) >> 11);
+	switch(hold){
+		case 0:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s", "LSL ");
+			break;
+		case 1:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s", "LSR ");
+			break;
+		case 2:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s", "ASR ");
+			break;
+		default:
+			snprintf(thumb_instruction, MAX_LEN, "%s", "ERROR: Unknown operation");
+			return thumb_instruction;
+	}
+
+	// isolate rd bits 0-2
+	hold = (opcode & 0x7);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d, ", hold);
+
+	// isolate rs bits 3-5
+	hold = (opcode & 0x38);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d, ", hold);
+
+	// isolate offset bits 6-10
+	hold = (opcode & 0x7C0);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "#%d", hold);
+
+	return thumb_instruction;
 }
