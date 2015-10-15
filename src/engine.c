@@ -1,10 +1,13 @@
+#include <string.h>
+#include <stdio.h>
+
 #include "engine.h"
 
 #define MAX_LEN 64
 
 char thumb_instruction[MAX_LEN];
 
-static typedef char *(*disassemble_func)(uint16_t);
+typedef char *(*disassemble_func)(uint16_t);
 
 static char *disassemble_mov_shift_reg(uint16_t opcode);
 static char *disassemble_add_sub(uint16_t opcode);
@@ -65,12 +68,21 @@ static char *disassemble_mov_shift_reg(uint16_t opcode)
 	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d, ", hold);
 
 	// isolate rs bits 3-5
-	hold = (opcode & 0x38);
+	hold = ((opcode & 0x38) >> 3);
 	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d, ", hold);
 
 	// isolate offset bits 6-10
-	hold = (opcode & 0x7C0);
+	hold = ((opcode & 0x7C0) >> 6);
 	i += snprintf(thumb_instruction + i, MAX_LEN - i, "#%d", hold);
 
 	return thumb_instruction;
+}
+
+static char *disassemble_add_sub(uint16_t opcode)
+{
+	return NULL;
+}
+static char *disassemble_mov_comp_add_sub_imm(uint16_t opcode)
+{
+	return NULL;
 }
