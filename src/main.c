@@ -6,8 +6,6 @@ int main()
 {
 	uint16_t opcode;
 
-	printf("*** Komodo Thumb 16-bit opcode to assembly converter ***\n");
-	
 	while(1)
 	{
 		printf("Enter opcode in hex: 0x");

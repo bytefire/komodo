@@ -1,3 +1,4 @@
 #include <stdint.h>
 
-char *get_assembly(uint16_t opcode);
+void engine_init();
+char *engine_get_assembly(uint16_t opcode);
