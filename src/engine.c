@@ -9,12 +9,12 @@ char thumb_instruction[MAX_LEN];
 
 typedef char *(*disassemble_func)(uint16_t);
 
-static char *disassemble_mov_shift_reg(uint16_t opcode);
-static char *disassemble_add_sub(uint16_t opcode);
-static char *disassemble_mov_comp_add_sub_imm(uint16_t opcode);
-static char *disassemble_alu_high_reg_decider(uint16_t opcode);
-static char *disassemble_alu(uint16_t opcode);
-static char *disassemble_high_reg_branch_exchange(uint16_t opcode);
+static char *disassemble_format1(uint16_t opcode);
+static char *disassemble_format2(uint16_t opcode);
+static char *disassemble_format3(uint16_t opcode);
+static char *disassemble_format4_5_decider(uint16_t opcode);
+static char *disassemble_format4(uint16_t opcode);
+static char *disassemble_format5(uint16_t opcode);
 
 static uint16_t isolate_bits(uint16_t src, uint8_t start_bit, uint8_t end_bit);
 
@@ -24,18 +24,24 @@ disassemble_func disassembler_vector[19];
 
 void engine_init()
 {
-	disassembler_vector[0] = disassemble_mov_shift_reg;
-	disassembler_vector[1] = disassemble_mov_shift_reg;
-	disassembler_vector[2] = disassemble_mov_shift_reg;
+	// format 1
+	disassembler_vector[0] = disassemble_format1;
+	disassembler_vector[1] = disassemble_format1;
+	disassembler_vector[2] = disassemble_format1;
 
-	disassembler_vector[3] = disassemble_add_sub;
+	// format 2
+	disassembler_vector[3] = disassemble_format2;
 
-	disassembler_vector[4] = disassemble_mov_comp_add_sub_imm;
-	disassembler_vector[5] = disassemble_mov_comp_add_sub_imm;
-	disassembler_vector[6] = disassemble_mov_comp_add_sub_imm;
-	disassembler_vector[7] = disassemble_mov_comp_add_sub_imm;
+	// format 3
+	disassembler_vector[4] = disassemble_format3;
+	disassembler_vector[5] = disassemble_format3;
+	disassembler_vector[6] = disassemble_format3;
+	disassembler_vector[7] = disassemble_format3;
 
-	disassembler_vector[8] = disassemble_alu_high_reg_decider;
+	// formats 4 and 5
+	disassembler_vector[8] = disassemble_format4_5_decider;
+
+
 }
 
 char *engine_get_assembly(uint16_t opcode)
@@ -49,7 +55,7 @@ char *engine_get_assembly(uint16_t opcode)
 	return disassembler_vector[opcode_identifier](opcode);
 }
 
-static char *disassemble_mov_shift_reg(uint16_t opcode)
+static char *disassemble_format1(uint16_t opcode)
 {
 	uint16_t hold;
 	int i = 0;
@@ -91,7 +97,7 @@ static char *disassemble_mov_shift_reg(uint16_t opcode)
 	return thumb_instruction;
 }
 
-static char *disassemble_add_sub(uint16_t opcode)
+static char *disassemble_format2(uint16_t opcode)
 {
 	uint16_t hold, is_immediate;
 	int i = 0;
@@ -127,7 +133,7 @@ static char *disassemble_add_sub(uint16_t opcode)
 
 	return thumb_instruction;
 }
-static char *disassemble_mov_comp_add_sub_imm(uint16_t opcode)
+static char *disassemble_format3(uint16_t opcode)
 {
 	uint16_t hold;
 	int i = 0;
@@ -164,7 +170,7 @@ static char *disassemble_mov_comp_add_sub_imm(uint16_t opcode)
 	return thumb_instruction;
 }
 
-static char *disassemble_alu_high_reg_decider(uint16_t opcode)
+static char *disassemble_format4_5_decider(uint16_t opcode)
 {
 	uint16_t hold;
 	
@@ -172,13 +178,13 @@ static char *disassemble_alu_high_reg_decider(uint16_t opcode)
 	hold = isolate_bits(opcode, 10, 10);
 
 	if (hold == 1){
-		return disassemble_alu(opcode);
+		return disassemble_format4(opcode);
 	} else {
-		return disassemble_high_reg_branch_exchange(opcode);
+		return disassemble_format5(opcode);
 	}
 }
 
-static char *disassemble_alu(uint16_t opcode)
+static char *disassemble_format4(uint16_t opcode)
 {
 	uint16_t hold;
 	int i = 0;
@@ -252,7 +258,7 @@ static char *disassemble_alu(uint16_t opcode)
 	return thumb_instruction;
 }
 
-static char *disassemble_high_reg_branch_exchange(uint16_t opcode)
+static char *disassemble_format5(uint16_t opcode)
 {
 	uint16_t hold;
 	int i = 0;
@@ -289,14 +295,21 @@ static char *disassemble_high_reg_branch_exchange(uint16_t opcode)
 		case 3:
 			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "BX");
 			break;
+		default:
+			snprintf(thumb_instruction, MAX_LEN, "%s", "ERROR: Format 5: Unknown operation");
+			return thumb_instruction;
 	}
 
-	// rd bits 0-2
-	hold = isolate_bits(opcode, 0, 2);
-	// if h1 bit 7 set then add 8 to rd
-	if (isolate_bits(opcode, 7, 7) == 1)
-		hold += 8;
-	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d, ", hold);
+	// ignore rd if op is BX
+	if (hold != 3) {
+		// rd bits 0-2
+		hold = isolate_bits(opcode, 0, 2);
+		// if h1 bit 7 set then add 8 to rd
+		if (isolate_bits(opcode, 7, 7) == 1)
+			hold += 8;
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d, ", hold);
+	}
+
 	// rs bit 3-5
 	hold = isolate_bits(opcode, 3, 5);
 	// if h2 bit 6 set then add 8 to rs
