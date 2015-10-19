@@ -16,6 +16,9 @@ static char *disassemble_format4_5_decider(uint16_t opcode);
 static char *disassemble_format4(uint16_t opcode);
 static char *disassemble_format5(uint16_t opcode);
 static char *disassemble_format6(uint16_t opcode);
+static char *disassemble_format7_8_decider(uint16_t opcode);
+static char *disassemble_format7(uint16_t opcode);
+static char *disassemble_format8(uint16_t opcode);
 
 static uint16_t isolate_bits(uint16_t src, uint8_t start_bit, uint8_t end_bit);
 
@@ -45,7 +48,9 @@ void engine_init()
 	// format 6
 	disassembler_vector[9] = disassemble_format6;
 
-
+	// formats 7 and 8
+	disassembler_vector[10] = disassemble_format7_8_decider;
+	disassembler_vector[11] = disassemble_format7_8_decider;
 }
 
 char *engine_get_assembly(uint16_t opcode)
@@ -343,6 +348,56 @@ static char *disassemble_format6(uint16_t opcode)
 	i += snprintf(thumb_instruction + i, MAX_LEN - i, "[PC, #%d]", hold);
 	
 	return thumb_instruction;
+}
+
+static char *disassemble_format7_8_decider(uint16_t opcode)
+{
+	if (isolate_bits(opcode, 9, 9) == 0)
+		return disassemble_format7(opcode);
+	else
+		return disassemble_format8(opcode);
+}
+
+static char *disassemble_format7(uint16_t opcode)
+{
+	uint16_t hold;
+	int i = 0;
+	
+	memset(thumb_instruction, 0, MAX_LEN);
+
+	// isolate bit 11 to decide whether it's STR(B) or LDR(B)
+	hold = isolate_bits(opcode, 11, 11);
+	if (hold == 0)
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s", "STR");
+	else
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s", "LDR");
+
+	// isolate bit 10. if set then add "B " otherwise " "
+	hold = isolate_bits(opcode, 10, 10);
+	if (hold == 0)
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s", " ");
+	else
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "B");
+	// isolate rd bits 0-2
+	hold = isolate_bits(opcode, 0, 2);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d, ", hold);
+
+	// isolate rb bits 3-5
+	hold = isolate_bits(opcode, 3, 5);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "[R%d, ", hold);
+
+	// isolate ro bits 6-8
+	hold = isolate_bits(opcode, 6, 8);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d]", hold);
+
+	return thumb_instruction;
+}
+
+// nextTODO: add other format 7 tests
+
+static char *disassemble_format8(uint16_t opcode)
+{
+	return NULL;
 }
 
 /***** helper functions *****/
