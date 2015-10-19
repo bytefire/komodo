@@ -15,6 +15,7 @@ static char *disassemble_format3(uint16_t opcode);
 static char *disassemble_format4_5_decider(uint16_t opcode);
 static char *disassemble_format4(uint16_t opcode);
 static char *disassemble_format5(uint16_t opcode);
+static char *disassemble_format6(uint16_t opcode);
 
 static uint16_t isolate_bits(uint16_t src, uint8_t start_bit, uint8_t end_bit);
 
@@ -40,6 +41,9 @@ void engine_init()
 
 	// formats 4 and 5
 	disassembler_vector[8] = disassemble_format4_5_decider;
+
+	// format 6
+	disassembler_vector[9] = disassemble_format6;
 
 
 }
@@ -317,6 +321,27 @@ static char *disassemble_format5(uint16_t opcode)
 		hold += 8;
 	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d", hold);
 
+	return thumb_instruction;
+}
+
+static char *disassemble_format6(uint16_t opcode)
+{
+	uint16_t hold;
+	int i = 0;
+	
+	memset(thumb_instruction, 0, MAX_LEN);
+
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "LDR");
+
+	// isolate rd bits 8-10
+	hold = isolate_bits(opcode, 8, 10);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d, ", hold);
+
+	// isolate imm bits 0-7
+	hold = isolate_bits(opcode, 0, 7);
+	hold = hold << 2;
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "[PC, #%d]", hold);
+	
 	return thumb_instruction;
 }
 
