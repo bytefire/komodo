@@ -409,10 +409,10 @@ static char *disassemble_format8(uint16_t opcode)
 			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "STRH");
 			break;
 		case 1:
-			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "LDRH");
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "LDSB");
 			break;
 		case 2:
-			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "LDSB");
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "LDRH");
 			break;
 		case 3:
 			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "LDSH");
