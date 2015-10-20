@@ -395,7 +395,48 @@ static char *disassemble_format7(uint16_t opcode)
 
 static char *disassemble_format8(uint16_t opcode)
 {
-	return NULL;	
+	uint16_t hold;
+	int i = 0;
+	
+	memset(thumb_instruction, 0, MAX_LEN);
+
+	// isolate op bits 10-11
+	hold = isolate_bits(opcode, 10, 11);
+
+	// switch-case over four possibilities
+	switch(hold) {
+		case 0:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "STRH");
+			break;
+		case 1:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "LDRH");
+			break;
+		case 2:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "LDSB");
+			break;
+		case 3:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "LDSH");
+			break;
+		default:
+			i += snprintf(thumb_instruction, MAX_LEN,
+				"ERROR: Format 8: Unknown op: %d", opcode);
+			return thumb_instruction;
+	}
+
+	// extract rd bits 0-2
+	hold = isolate_bits(opcode, 0, 2);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d, ", hold);
+
+
+	// extract rb bits 3-5
+	hold = isolate_bits(opcode, 3, 5);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "[R%d, ", hold);
+
+	// extract ro bits 6-8
+	hold = isolate_bits(opcode, 6, 8);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d]", hold);
+
+	return thumb_instruction;
 }
 
 /***** helper functions *****/
