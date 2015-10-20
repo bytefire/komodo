@@ -17,11 +17,6 @@ int clean_komodo_test_suite(void)
 	return 0;
 }
 
-void test_two_plus_two(void)
-{
-	CU_ASSERT((2 + 2) == 4);
-}
-
 void test_format6()
 {
 	uint16_t opcode = 0x4dd3;
@@ -37,7 +32,17 @@ void test_format7()
 
 	CU_ASSERT(strcmp(assembly, "STR R3, [R2, R6]") == 0);
 
-	// opcode = ...
+	opcode = 0x5561;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly, "STRB R1, [R4, R5]") == 0);
+
+	opcode = 0x59c2;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly, "LDR R2, [R0, R7]") == 0);
+
+	opcode = 0x5d8b;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly, "LDRB R3, [R1, R6]") == 0);
 }
 
 int setup_komodo_test_suite(void) {
@@ -47,8 +52,7 @@ int setup_komodo_test_suite(void) {
 		return -1;
 	}
 
-	if ((NULL == CU_add_test(pSuite, "test of two_plus_two()", test_two_plus_two)) ||
-		(NULL == CU_add_test(pSuite, "test of format 6", test_format6)) ||
+	if ((NULL == CU_add_test(pSuite, "test of format 6", test_format6)) ||
 		(NULL == CU_add_test(pSuite, "test of format 7", test_format7))) {
 		return -1;
 	}

@@ -393,11 +393,9 @@ static char *disassemble_format7(uint16_t opcode)
 	return thumb_instruction;
 }
 
-// nextTODO: add other format 7 tests
-
 static char *disassemble_format8(uint16_t opcode)
 {
-	return NULL;
+	return NULL;	
 }
 
 /***** helper functions *****/
