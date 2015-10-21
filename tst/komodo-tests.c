@@ -60,11 +60,8 @@ void test_format8()
 	assembly = engine_get_assembly(opcode);
 	CU_ASSERT(strcmp(assembly, "LDSB R2, [R7, R1]") == 0);
 
-	opcode = 0x5da3;
+	opcode = 0x5ea3;
 	assembly = engine_get_assembly(opcode);
-
-	printf(">>> %s\n", assembly);
-
 	CU_ASSERT(strcmp(assembly, "LDSH R3, [R4, R2]") == 0);
 }
 
