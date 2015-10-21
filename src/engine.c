@@ -20,6 +20,7 @@ static char *disassemble_format7_8_decider(uint16_t opcode);
 static char *disassemble_format7(uint16_t opcode);
 static char *disassemble_format8(uint16_t opcode);
 static char *disassemble_format9(uint16_t opcode);
+static char *disassemble_format10(uint16_t opcode);
 
 static uint16_t isolate_bits(uint16_t src, uint8_t start_bit, uint8_t end_bit);
 
@@ -58,6 +59,11 @@ void engine_init()
 	disassembler_vector[13] = disassemble_format9;
 	disassembler_vector[14] = disassemble_format9;
 	disassembler_vector[15] = disassemble_format9;
+
+	// format 10
+	disassembler_vector[16] = disassemble_format10;
+	disassembler_vector[17] = disassemble_format10;
+
 }
 
 char *engine_get_assembly(uint16_t opcode)
@@ -485,6 +491,36 @@ static char *disassemble_format9(uint16_t opcode)
 	// if it's a word access then last two bits, both zero, are implied
 	if (isolate_bits(opcode, 12, 12) == 0)
 		hold = hold << 2;
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "#%d]", hold);
+
+	return thumb_instruction;
+}
+
+static char *disassemble_format10(uint16_t opcode)
+{
+	uint16_t hold;
+	int i = 0;
+
+	memset(thumb_instruction, 0, MAX_LEN);
+
+	// isolate op bit 11
+	hold = isolate_bits(opcode, 11, 11);
+	if (hold == 0)
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "STRH");
+	else
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "LDRH");
+	
+	// isolate rd bits 0-2
+	hold = isolate_bits(opcode, 0, 2);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d, ", hold);
+
+	// isolate rb bits 3-5
+	hold = isolate_bits(opcode, 3, 5);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "[R%d, ", hold);
+
+	// isolate offset5 bits 6-10
+	hold = isolate_bits(opcode, 6, 10);
+	hold = hold << 1;
 	i += snprintf(thumb_instruction + i, MAX_LEN - i, "#%d]", hold);
 
 	return thumb_instruction;
