@@ -85,6 +85,18 @@ void test_format9()
 	CU_ASSERT(strcmp(assembly, "LDRB R5, [R4, #29]") == 0);
 }
 
+void test_format10()
+{
+	uint16_t opcode = 0x870e;
+	char *assembly = engine_get_assembly(opcode);
+
+	CU_ASSERT(strcmp(assembly, "STRH R6, [R1, #56]") == 0);
+
+	opcode = 0x88bc;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly, "LDRH R4, [R7, #4]") == 0);
+}
+
 int setup_komodo_test_suite(void) {
 	CU_pSuite pSuite = NULL;
 	pSuite = CU_add_suite("Komodo Test Suite", init_komodo_test_suite, clean_komodo_test_suite);
@@ -95,7 +107,8 @@ int setup_komodo_test_suite(void) {
 	if ((NULL == CU_add_test(pSuite, "test of format 6", test_format6)) ||
 		(NULL == CU_add_test(pSuite, "test of format 7", test_format7)) ||
 		(NULL == CU_add_test(pSuite, "test of format 8", test_format8)) ||
-		(NULL == CU_add_test(pSuite, "test of format 9", test_format9))) {
+		(NULL == CU_add_test(pSuite, "test of format 9", test_format9)) ||
+		(NULL == CU_add_test(pSuite, "test of format 10", test_format10))) {
 		return -1;
 	}
 
