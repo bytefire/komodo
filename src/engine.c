@@ -19,6 +19,7 @@ static char *disassemble_format6(uint16_t opcode);
 static char *disassemble_format7_8_decider(uint16_t opcode);
 static char *disassemble_format7(uint16_t opcode);
 static char *disassemble_format8(uint16_t opcode);
+static char *disassemble_format9(uint16_t opcode);
 
 static uint16_t isolate_bits(uint16_t src, uint8_t start_bit, uint8_t end_bit);
 
@@ -51,6 +52,12 @@ void engine_init()
 	// formats 7 and 8
 	disassembler_vector[10] = disassemble_format7_8_decider;
 	disassembler_vector[11] = disassemble_format7_8_decider;
+
+	// format 9
+	disassembler_vector[12] = disassemble_format9;
+	disassembler_vector[13] = disassemble_format9;
+	disassembler_vector[14] = disassemble_format9;
+	disassembler_vector[15] = disassemble_format9;
 }
 
 char *engine_get_assembly(uint16_t opcode)
@@ -419,7 +426,7 @@ static char *disassemble_format8(uint16_t opcode)
 			break;
 		default:
 			i += snprintf(thumb_instruction, MAX_LEN,
-				"ERROR: Format 8: Unknown op: %d", opcode);
+				"ERROR: Format 8: Unknown op: %d", hold);
 			return thumb_instruction;
 	}
 
@@ -435,6 +442,50 @@ static char *disassemble_format8(uint16_t opcode)
 	// extract ro bits 6-8
 	hold = isolate_bits(opcode, 6, 8);
 	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d]", hold);
+
+	return thumb_instruction;
+}
+
+static char *disassemble_format9(uint16_t opcode)
+{
+	uint16_t hold;
+	int i = 0;
+
+	memset(thumb_instruction, 0, MAX_LEN);
+
+	// isolate op bits 11-12
+	hold = isolate_bits(opcode, 11, 12);
+	switch (hold) {
+		case 0:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "STR");
+			break;
+		case 1:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "LDR");
+			break;
+		case 2:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "STRB");
+			break;
+		case 3:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "LDRB");
+			break;
+		default:
+			i += snprintf(thumb_instruction, MAX_LEN,
+				"ERROR: Format 9: Unknown op: %d", hold);
+			return thumb_instruction;
+	}
+
+	// isolate rd bits 0-2
+	hold = isolate_bits(opcode, 0, 2);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d, ", hold);
+	// isolate rb bits 3-5
+	hold = isolate_bits(opcode, 3, 5);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "[R%d, ", hold);
+	// isolate offset 6-10
+	hold = isolate_bits(opcode, 6, 10);
+	// if it's a word access then last two bits, both zero, are implied
+	if (isolate_bits(opcode, 12, 12) == 0)
+		hold = hold << 2;
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "#%d]", hold);
 
 	return thumb_instruction;
 }
