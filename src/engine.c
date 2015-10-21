@@ -21,6 +21,7 @@ static char *disassemble_format7(uint16_t opcode);
 static char *disassemble_format8(uint16_t opcode);
 static char *disassemble_format9(uint16_t opcode);
 static char *disassemble_format10(uint16_t opcode);
+static char *disassemble_format11(uint16_t opcode);
 
 static uint16_t isolate_bits(uint16_t src, uint8_t start_bit, uint8_t end_bit);
 
@@ -63,6 +64,10 @@ void engine_init()
 	// format 10
 	disassembler_vector[16] = disassemble_format10;
 	disassembler_vector[17] = disassemble_format10;
+
+	// format 11
+	disassembler_vector[18] = disassemble_format11;
+	disassembler_vector[19] = disassemble_format11;
 
 }
 
@@ -522,6 +527,33 @@ static char *disassemble_format10(uint16_t opcode)
 	hold = isolate_bits(opcode, 6, 10);
 	hold = hold << 1;
 	i += snprintf(thumb_instruction + i, MAX_LEN - i, "#%d]", hold);
+
+	return thumb_instruction;
+}
+
+static char *disassemble_format11(uint16_t opcode)
+{
+	uint16_t hold;
+	int i = 0;
+
+	memset(thumb_instruction, 0, MAX_LEN);
+
+	// isolate op bit 11
+	hold = isolate_bits(opcode, 11, 11);
+	if (hold == 0)
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "STR");
+	else
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "LDR");
+
+	// isolate rd bits 8-10
+	hold = isolate_bits(opcode, 8, 10);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d, ", hold);	
+
+	// isolate word8 bits 0-7
+	hold = isolate_bits(opcode, 0, 7);
+	// left shift it by 2
+	hold = hold << 2;
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "[SP, #%d]", hold);
 
 	return thumb_instruction;
 }
