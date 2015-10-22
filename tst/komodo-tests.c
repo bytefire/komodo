@@ -99,12 +99,14 @@ void test_format10()
 
 void test_format11()
 {
-	uint16_t opcode = 0x94eb;
+	uint16_t opcode = 0x947b;
 	char *assembly = engine_get_assembly(opcode);
 
-	printf(">>> %s\n", assembly);
-
 	CU_ASSERT(strcmp(assembly, "STR R4, [SP, #492]") == 0);
+
+	opcode = 0x9fa8;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly, "LDR R7, [SP, #672]") == 0);
 }
 
 int setup_komodo_test_suite(void) {
