@@ -23,6 +23,9 @@ static char *disassemble_format9(uint16_t opcode);
 static char *disassemble_format10(uint16_t opcode);
 static char *disassemble_format11(uint16_t opcode);
 static char *disassemble_format12(uint16_t opcode);
+static char *disassemble_format13_14_decider(uint16_t opcode);
+static char *disassemble_format13(uint16_t opcode);
+static char *disassemble_format14(uint16_t opcode);
 
 static uint16_t isolate_bits(uint16_t src, uint8_t start_bit, uint8_t end_bit);
 
@@ -73,6 +76,10 @@ void engine_init()
 	// format 12
 	disassembler_vector[20] = disassemble_format12;
 	disassembler_vector[21] = disassemble_format12;
+
+	// format 13 and 14
+	disassembler_vector[22] = disassemble_format13_14_decider;
+	disassembler_vector[23] = disassemble_format13_14_decider;
 }
 
 char *engine_get_assembly(uint16_t opcode)
@@ -589,6 +596,42 @@ static char *disassemble_format12(uint16_t opcode)
 	i += snprintf(thumb_instruction + i, MAX_LEN - i, "#%d", hold);
 
 	return thumb_instruction;
+}
+
+static char *disassemble_format13_14_decider(uint16_t opcode)
+{
+	if (isolate_bits(opcode, 10, 10) == 0)
+		return disassemble_format13(opcode);
+	else
+		return disassemble_format14(opcode);
+}
+
+static char *disassemble_format13(uint16_t opcode)
+{
+	uint16_t hold;
+	int i = 0;
+
+	memset(thumb_instruction, 0, MAX_LEN);
+
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s", "ADD SP, #");
+
+	// isolate sword7 bits 0-6
+	hold = isolate_bits(opcode, 0, 6);
+	// left shift by 2
+	hold = hold << 2;
+
+	// isolate sign bit 7
+	if (isolate_bits(opcode, 7, 7) == 0)
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%d", hold);
+	else
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "-%d", hold);
+
+	return thumb_instruction;
+}
+
+static char *disassemble_format14(uint16_t opcode)
+{
+	return NULL;
 }
 
 /***** helper functions *****/
