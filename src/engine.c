@@ -26,6 +26,7 @@ static char *disassemble_format12(uint16_t opcode);
 static char *disassemble_format13_14_decider(uint16_t opcode);
 static char *disassemble_format13(uint16_t opcode);
 static char *disassemble_format14(uint16_t opcode);
+static char *disassemble_format15(uint16_t opcode);
 
 static uint16_t isolate_bits(uint16_t src, uint8_t start_bit, uint8_t end_bit);
 
@@ -80,6 +81,10 @@ void engine_init()
 	// format 13 and 14
 	disassembler_vector[22] = disassemble_format13_14_decider;
 	disassembler_vector[23] = disassemble_format13_14_decider;
+
+	// format 15
+	disassembler_vector[24] = disassemble_format15;
+	disassembler_vector[25] = disassemble_format15;
 }
 
 char *engine_get_assembly(uint16_t opcode)
@@ -659,6 +664,37 @@ static char *disassemble_format14(uint16_t opcode)
 			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s}", "PC");	
 	else
 		i += snprintf(thumb_instruction + i - 2, MAX_LEN - i, "%s", "}");
+
+	return thumb_instruction;
+}
+
+static char *disassemble_format15(uint16_t opcode)
+{
+	uint16_t hold;
+	int i = 0;
+	uint8_t reg_mask_shift = 0;
+
+	memset(thumb_instruction, 0, MAX_LEN);
+
+	// isolate load/store bit 11
+	if (isolate_bits(opcode, 11, 11) == 0)
+		i += snprintf(thumb_instruction + i - 2, MAX_LEN - i, "%s ", "STMIA");
+	else
+		i += snprintf(thumb_instruction + i - 2, MAX_LEN - i, "%s ", "LDMIA");
+
+	// isolate rb bits 8-10
+	hold = isolate_bits(opcode, 8, 10);
+	i += snprintf(thumb_instruction + i - 2, MAX_LEN - i, "R%d!, ", hold);
+
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s", "{");
+	// isolate Rlist bits 0-7
+	hold = isolate_bits(opcode, 0, 7);
+	for (reg_mask_shift = 0; reg_mask_shift < 8; reg_mask_shift++) {
+		if (hold & (1 << reg_mask_shift))
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d, ", reg_mask_shift);
+	}
+
+	i += snprintf(thumb_instruction + i - 2, MAX_LEN - i, "%s", "}");
 
 	return thumb_instruction;
 }
