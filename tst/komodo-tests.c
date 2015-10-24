@@ -121,6 +121,18 @@ void test_format12()
 	CU_ASSERT(strcmp(assembly, "ADD R6, SP, #212") == 0);
 }
 
+void test_format13()
+{
+	uint16_t opcode = 0xb043;
+	char *assembly = engine_get_assembly(opcode);
+
+	CU_ASSERT(strcmp(assembly, "ADD SP, #268") == 0);
+
+	opcode = 0xb09a;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly, "ADD SP, #-104") == 0);
+}
+
 int setup_komodo_test_suite(void) {
 	CU_pSuite pSuite = NULL;
 	pSuite = CU_add_suite("Komodo Test Suite", init_komodo_test_suite, clean_komodo_test_suite);
@@ -134,7 +146,8 @@ int setup_komodo_test_suite(void) {
 		(NULL == CU_add_test(pSuite, "test of format 9", test_format9)) ||
 		(NULL == CU_add_test(pSuite, "test of format 10", test_format10)) ||
 		(NULL == CU_add_test(pSuite, "test of format 11", test_format11)) ||
-		(NULL == CU_add_test(pSuite, "test of format 12", test_format12))) {
+		(NULL == CU_add_test(pSuite, "test of format 12", test_format12)) ||
+		(NULL == CU_add_test(pSuite, "test of format 13", test_format13))) {
 		return -1;
 	}
 
