@@ -631,7 +631,36 @@ static char *disassemble_format13(uint16_t opcode)
 
 static char *disassemble_format14(uint16_t opcode)
 {
-	return NULL;
+	uint16_t hold;
+	int i = 0;
+	uint8_t reg_mask_shift = 0;
+
+	memset(thumb_instruction, 0, MAX_LEN);
+
+	// isloate L bit 11
+	if (isolate_bits(opcode, 11, 11) == 0)
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "PUSH");
+	else
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "POP");
+
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s", "{");
+	// isolate Rlist bits 0-7
+	hold = isolate_bits(opcode, 0, 7);
+	for (reg_mask_shift = 0; reg_mask_shift < 8; reg_mask_shift++) {
+		if (hold & (1 << reg_mask_shift))
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d, ", reg_mask_shift);
+	}
+
+	// isolate R bit 8
+	if (isolate_bits(opcode, 8, 8)) 
+		if (isolate_bits(opcode, 11, 11) == 0)
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s}", "LR");
+		else
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s}", "PC");	
+	else
+		i += snprintf(thumb_instruction + i - 2, MAX_LEN - i, "%s", "}");
+
+	return thumb_instruction;
 }
 
 /***** helper functions *****/
