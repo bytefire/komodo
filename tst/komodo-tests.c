@@ -153,6 +153,18 @@ void test_format14()
 	CU_ASSERT(strcmp(assembly, "POP {R4, R5, R6, R7, PC}") == 0);
 }
 
+void test_format15()
+{
+	uint16_t opcode = 0xc0f8;
+	char *assembly = engine_get_assembly(opcode);
+
+	CU_ASSERT(strcmp(assembly, "STMIA R0!, {R3, R4, R5, R6, R7}") == 0);
+
+	opcode = 0xcbf7;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly, "LDMIA R3!, {R0, R1, R2, R4, R5, R6, R7}") == 0);
+}
+
 int setup_komodo_test_suite(void) {
 	CU_pSuite pSuite = NULL;
 	pSuite = CU_add_suite("Komodo Test Suite", init_komodo_test_suite, clean_komodo_test_suite);
@@ -168,7 +180,8 @@ int setup_komodo_test_suite(void) {
 		(NULL == CU_add_test(pSuite, "test of format 11", test_format11)) ||
 		(NULL == CU_add_test(pSuite, "test of format 12", test_format12)) ||
 		(NULL == CU_add_test(pSuite, "test of format 13", test_format13)) ||
-		(NULL == CU_add_test(pSuite, "test of format 14", test_format14))) {
+		(NULL == CU_add_test(pSuite, "test of format 14", test_format14)) ||
+		(NULL == CU_add_test(pSuite, "test of format 15", test_format15))) {
 		return -1;
 	}
 

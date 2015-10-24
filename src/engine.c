@@ -678,13 +678,13 @@ static char *disassemble_format15(uint16_t opcode)
 
 	// isolate load/store bit 11
 	if (isolate_bits(opcode, 11, 11) == 0)
-		i += snprintf(thumb_instruction + i - 2, MAX_LEN - i, "%s ", "STMIA");
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "STMIA");
 	else
-		i += snprintf(thumb_instruction + i - 2, MAX_LEN - i, "%s ", "LDMIA");
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "LDMIA");
 
 	// isolate rb bits 8-10
 	hold = isolate_bits(opcode, 8, 10);
-	i += snprintf(thumb_instruction + i - 2, MAX_LEN - i, "R%d!, ", hold);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "R%d!, ", hold);
 
 	i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s", "{");
 	// isolate Rlist bits 0-7
