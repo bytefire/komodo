@@ -30,6 +30,7 @@ static char *disassemble_format15(uint16_t opcode);
 static char *disassemble_format16_17_decider(uint16_t opcode);
 static char *disassemble_format16(uint16_t opcode);
 static char *disassemble_format17(uint16_t opcode);
+static char *disassemble_format18(uint16_t opcode);
 
 static uint16_t isolate_bits(uint16_t src, uint8_t start_bit, uint8_t end_bit);
 
@@ -93,6 +94,9 @@ void engine_init()
 	disassembler_vector[26] = disassemble_format16;
 	// formats 16 and 17
 	disassembler_vector[27] = disassemble_format16_17_decider;
+
+	// format 18
+	disassembler_vector[28] = disassemble_format18;
 }
 
 char *engine_get_assembly(uint16_t opcode)
@@ -799,6 +803,26 @@ static char *disassemble_format17(uint16_t opcode)
 	// isolate bits interrupt number bits 0-7
 	hold = isolate_bits(opcode, 0, 7);
 	snprintf(thumb_instruction, MAX_LEN, "SWI %d", hold);
+
+	return thumb_instruction;
+}
+
+static char *disassemble_format18(uint16_t opcode)
+{
+	uint16_t hold;
+	
+	memset(thumb_instruction, 0, MAX_LEN);
+
+	// isolate offset bits 0-10
+	hold = isolate_bits(opcode, 0, 10);
+	hold = hold << 1;
+	// if most significant bit 11 is set then last bit must be set as this
+	//	is two's complement
+	if (hold & 0x800)
+		hold = hold | 0x01;
+
+	snprintf(thumb_instruction, MAX_LEN,
+		"B label ;label = PC + (%d) - Note that PC = curr instruction + 4 due to instruction prefetch", hold);
 
 	return thumb_instruction;
 }
