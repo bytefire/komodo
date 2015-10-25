@@ -165,6 +165,80 @@ void test_format15()
 	CU_ASSERT(strcmp(assembly, "LDMIA R3!, {R0, R1, R2, R4, R5, R6, R7}") == 0);
 }
 
+void test_format16()
+{
+	uint16_t opcode = 0xd012;
+	char *assembly = engine_get_assembly(opcode);
+
+	CU_ASSERT(strcmp(assembly,
+		"BEQ label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+
+	opcode = 0xd1be;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly,
+		"BNE label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+
+	opcode = 0xd212;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly,
+		"BCS label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+
+	opcode = 0xd3be;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly,
+		"BCC label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+
+	opcode = 0xd412;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly,
+		"BMI label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+
+	opcode = 0xd5be;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly,
+		"BPL label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+
+	opcode = 0xd612;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly,
+		"BVS label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+
+	opcode = 0xd7be;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly,
+		"BVC label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+
+	opcode = 0xd812;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly,
+		"BHI label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+
+	opcode = 0xd9be;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly,
+		"BLS label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+
+	opcode = 0xda12;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly,
+		"BGE label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+
+	opcode = 0xdbbe;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly,
+		"BLT label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+
+	opcode = 0xdc12;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly,
+		"BGT label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+
+	opcode = 0xddbe;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly,
+		"BLE label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+}
+
 int setup_komodo_test_suite(void) {
 	CU_pSuite pSuite = NULL;
 	pSuite = CU_add_suite("Komodo Test Suite", init_komodo_test_suite, clean_komodo_test_suite);
@@ -181,7 +255,8 @@ int setup_komodo_test_suite(void) {
 		(NULL == CU_add_test(pSuite, "test of format 12", test_format12)) ||
 		(NULL == CU_add_test(pSuite, "test of format 13", test_format13)) ||
 		(NULL == CU_add_test(pSuite, "test of format 14", test_format14)) ||
-		(NULL == CU_add_test(pSuite, "test of format 15", test_format15))) {
+		(NULL == CU_add_test(pSuite, "test of format 15", test_format15)) ||
+		(NULL == CU_add_test(pSuite, "test of format 16", test_format16))) {
 		return -1;
 	}
 

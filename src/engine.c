@@ -777,7 +777,7 @@ static char *disassemble_format16(uint16_t opcode)
 	// islolate offset bits 0-6
 	hold = isolate_bits(opcode, 0, 6);
 	hold = hold << 1;
-	i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "label ; label = PC");
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "label ;label = PC");
 	// check sign bit 7
 	if (isolate_bits(opcode, 7, 7))
 		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "-");

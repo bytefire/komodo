@@ -139,3 +139,60 @@ STMIA R0!, {R3, R4, R5, R6, R7}
 LDMIA R3!, {R0, R1, R2, R4, R5, R6, R7}
 1100.1011.1111.0111
 0xcbf7
+
+--- format 16 ---
+BEQ label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.
+1101.0000.0001.0010
+0xd012
+
+BNE label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
+1101.0001.1011.1110
+0xd1be
+
+BCS label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.
+1101.0010.0001.0010
+0xd212
+
+BCC label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
+1101.0011.1011.1110
+0xd3be
+
+BMI label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.
+1101.0010.0001.0010
+0xd412
+
+BPL label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
+1101.0101.1011.1110
+0xd5be
+
+BVS label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.
+1101.0110.0001.0010
+0xd612
+
+BVC label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
+1101.0111.1011.1110
+0xd7be
+
+BHI label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.
+1101.1000.0001.0010
+0xd812
+
+BLS label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
+1101.1001.1011.1110
+0xd9be
+
+BGE label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.
+1101.1010.0001.0010
+0xda12
+
+BLT label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
+1101.1011.1011.1110
+0xdbbe
+
+BGT label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.
+1101.1100.0001.0010
+0xdc12
+
+BLE label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
+1101.1101.1011.1110
+0xdcbe
