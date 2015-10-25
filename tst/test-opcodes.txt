@@ -196,3 +196,8 @@ BGT label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruct
 BLE label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
 1101.1101.1011.1110
 0xdcbe
+
+--- format 17 ---
+SWI 18
+1101.1111.0001.0010
+0xdf12

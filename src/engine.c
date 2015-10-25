@@ -792,7 +792,15 @@ static char *disassemble_format16(uint16_t opcode)
 
 static char *disassemble_format17(uint16_t opcode)
 {
-	return NULL;
+	uint16_t hold;
+	
+	memset(thumb_instruction, 0, MAX_LEN);
+
+	// isolate bits interrupt number bits 0-7
+	hold = isolate_bits(opcode, 0, 7);
+	snprintf(thumb_instruction, MAX_LEN, "SWI %d", hold);
+
+	return thumb_instruction;
 }
 
 /***** helper functions *****/

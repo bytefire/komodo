@@ -239,6 +239,14 @@ void test_format16()
 		"BLE label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
 }
 
+void test_format17()
+{
+	uint16_t opcode = 0xdf12;
+	char *assembly = engine_get_assembly(opcode);
+
+	CU_ASSERT(strcmp(assembly, "SWI 18") == 0);
+}
+
 int setup_komodo_test_suite(void) {
 	CU_pSuite pSuite = NULL;
 	pSuite = CU_add_suite("Komodo Test Suite", init_komodo_test_suite, clean_komodo_test_suite);
@@ -256,7 +264,8 @@ int setup_komodo_test_suite(void) {
 		(NULL == CU_add_test(pSuite, "test of format 13", test_format13)) ||
 		(NULL == CU_add_test(pSuite, "test of format 14", test_format14)) ||
 		(NULL == CU_add_test(pSuite, "test of format 15", test_format15)) ||
-		(NULL == CU_add_test(pSuite, "test of format 16", test_format16))) {
+		(NULL == CU_add_test(pSuite, "test of format 16", test_format16)) ||
+		(NULL == CU_add_test(pSuite, "test of format 17", test_format17))) {
 		return -1;
 	}
 
