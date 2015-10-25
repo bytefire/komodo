@@ -816,13 +816,13 @@ static char *disassemble_format18(uint16_t opcode)
 	// isolate offset bits 0-10
 	hold = isolate_bits(opcode, 0, 10);
 	hold = hold << 1;
-	// if most significant bit 11 is set then last bit must be set as this
-	//	is two's complement
+	// if most significant bit 11 is set then sign-extend as this is two's complement
 	if (hold & 0x800)
-		hold = hold | 0x01;
+		hold = hold | 0xF000;
 
 	snprintf(thumb_instruction, MAX_LEN,
-		"B label ;label = PC + (%d) - Note that PC = curr instruction + 4 due to instruction prefetch", hold);
+		"B label ;label = PC + (%d) - Note that PC = curr instruction + 4 due to instruction prefetch",
+		(int16_t)hold);
 
 	return thumb_instruction;
 }

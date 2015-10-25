@@ -201,3 +201,21 @@ BLE label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruc
 SWI 18
 1101.1111.0001.0010
 0xdf12
+
+--- format 18 ---
+B label ;label = PC + (12) - Note that PC = curr instruction + 4 due to instruction prefetch
+1110.0000.0000.0110
+0xe006
+
+B label ;label = PC + (-24) - Note that PC = curr instruction + 4 due to instruction prefetch
+1110.0111.1111.0100
+0xe7f4
+
+
+
+
+
+
+00010111
+
+11111110100
