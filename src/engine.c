@@ -722,6 +722,8 @@ static char *disassemble_format16_17_decider(uint16_t opcode)
 
 static char *disassemble_format16(uint16_t opcode)
 {
+	// FIXME: the immediate value is two's complement
+
 	uint16_t hold;
 	int i = 0;
 
