@@ -722,8 +722,6 @@ static char *disassemble_format16_17_decider(uint16_t opcode)
 
 static char *disassemble_format16(uint16_t opcode)
 {
-	// FIXME: the immediate value is two's complement
-
 	uint16_t hold;
 	int i = 0;
 
@@ -780,18 +778,16 @@ static char *disassemble_format16(uint16_t opcode)
 			return thumb_instruction;
 	}
 
-	// islolate offset bits 0-6
-	hold = isolate_bits(opcode, 0, 6);
+	// islolate offset bits 0-7
+	hold = isolate_bits(opcode, 0, 7);
 	hold = hold << 1;
-	i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "label ;label = PC");
-	// check sign bit 7
-	if (isolate_bits(opcode, 7, 7))
-		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "-");
-	else
-		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "+");
+	// if most significant bit 7 is set then sign-extend as this is two's complement
+	if (hold & 0x100)
+		hold = hold | 0xFF00;
 
-	i += snprintf(thumb_instruction + i, MAX_LEN - i, 
-		"%d. Note that PC is curr instruction + 4 due to instruction prefetch.", hold);
+	i += snprintf(thumb_instruction + i, MAX_LEN - i,
+		"label ;label = PC + (%d). Note that PC is curr instruction + 4 due to instruction prefetch.",
+		(int16_t) hold);
 
 	return thumb_instruction;
 }

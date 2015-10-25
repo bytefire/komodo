@@ -146,56 +146,57 @@ BEQ label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruct
 0xd012
 
 BNE label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
-1101.0001.1011.1110
-0xd1be
+1101.0001.1100.0010
+0xd184
 
+******************************
 BCS label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.
 1101.0010.0001.0010
 0xd212
 
 BCC label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
-1101.0011.1011.1110
-0xd3be
+1101.0011.1000.0100
+0xd384
 
 BMI label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.
 1101.0010.0001.0010
 0xd412
 
 BPL label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
-1101.0101.1011.1110
-0xd5be
+1101.0101.1000.0100
+0xd584
 
 BVS label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.
 1101.0110.0001.0010
 0xd612
 
 BVC label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
-1101.0111.1011.1110
-0xd7be
+1101.0111.1000.0100
+0xd784
 
 BHI label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.
 1101.1000.0001.0010
 0xd812
 
 BLS label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
-1101.1001.1011.1110
-0xd9be
+1101.1001.1000.0100
+0xd984
 
 BGE label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.
 1101.1010.0001.0010
 0xda12
 
 BLT label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
-1101.1011.1011.1110
-0xdbbe
+1101.1011.1000.0100
+0xdb84
 
 BGT label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.
 1101.1100.0001.0010
 0xdc12
 
 BLE label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
-1101.1101.1011.1110
-0xdcbe
+1101.1101.1000.0100
+0xdc84
 
 --- format 17 ---
 SWI 18
@@ -214,8 +215,6 @@ B label ;label = PC + (-24) - Note that PC = curr instruction + 4 due to instruc
 
 
 
+01111011
 
-
-00010111
-
-11111110100
+10000100

@@ -171,72 +171,72 @@ void test_format16()
 	char *assembly = engine_get_assembly(opcode);
 
 	CU_ASSERT(strcmp(assembly,
-		"BEQ label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+		"BEQ label ;label = PC + (36). Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
 
-	opcode = 0xd1be;
+	opcode = 0xd1c2;
 	assembly = engine_get_assembly(opcode);
 	CU_ASSERT(strcmp(assembly,
-		"BNE label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+		"BNE label ;label = PC + (-124). Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
 
 	opcode = 0xd212;
 	assembly = engine_get_assembly(opcode);
 	CU_ASSERT(strcmp(assembly,
-		"BCS label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+		"BCS label ;label = PC + (36). Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
 
-	opcode = 0xd3be;
+	opcode = 0xd3c2;
 	assembly = engine_get_assembly(opcode);
 	CU_ASSERT(strcmp(assembly,
-		"BCC label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+		"BCC label ;label = PC + (-124). Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
 
 	opcode = 0xd412;
 	assembly = engine_get_assembly(opcode);
 	CU_ASSERT(strcmp(assembly,
-		"BMI label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+		"BMI label ;label = PC + (36). Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
 
-	opcode = 0xd5be;
+	opcode = 0xd5c2;
 	assembly = engine_get_assembly(opcode);
 	CU_ASSERT(strcmp(assembly,
-		"BPL label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+		"BPL label ;label = PC + (-124). Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
 
 	opcode = 0xd612;
 	assembly = engine_get_assembly(opcode);
 	CU_ASSERT(strcmp(assembly,
-		"BVS label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+		"BVS label ;label = PC + (36). Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
 
-	opcode = 0xd7be;
+	opcode = 0xd7c2;
 	assembly = engine_get_assembly(opcode);
 	CU_ASSERT(strcmp(assembly,
-		"BVC label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+		"BVC label ;label = PC + (-124). Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
 
 	opcode = 0xd812;
 	assembly = engine_get_assembly(opcode);
 	CU_ASSERT(strcmp(assembly,
-		"BHI label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+		"BHI label ;label = PC + (36). Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
 
-	opcode = 0xd9be;
+	opcode = 0xd9c2;
 	assembly = engine_get_assembly(opcode);
 	CU_ASSERT(strcmp(assembly,
-		"BLS label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+		"BLS label ;label = PC + (-124). Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
 
 	opcode = 0xda12;
 	assembly = engine_get_assembly(opcode);
 	CU_ASSERT(strcmp(assembly,
-		"BGE label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+		"BGE label ;label = PC + (36). Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
 
-	opcode = 0xdbbe;
+	opcode = 0xdbc2;
 	assembly = engine_get_assembly(opcode);
 	CU_ASSERT(strcmp(assembly,
-		"BLT label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+		"BLT label ;label = PC + (-124). Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
 
 	opcode = 0xdc12;
 	assembly = engine_get_assembly(opcode);
 	CU_ASSERT(strcmp(assembly,
-		"BGT label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+		"BGT label ;label = PC + (36). Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
 
-	opcode = 0xddbe;
+	opcode = 0xddc2;
 	assembly = engine_get_assembly(opcode);
 	CU_ASSERT(strcmp(assembly,
-		"BLE label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
+		"BLE label ;label = PC + (-124). Note that PC is curr instruction + 4 due to instruction prefetch.") == 0);
 }
 
 void test_format17()
