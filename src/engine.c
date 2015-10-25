@@ -27,6 +27,9 @@ static char *disassemble_format13_14_decider(uint16_t opcode);
 static char *disassemble_format13(uint16_t opcode);
 static char *disassemble_format14(uint16_t opcode);
 static char *disassemble_format15(uint16_t opcode);
+static char *disassemble_format16_17_decider(uint16_t opcode);
+static char *disassemble_format16(uint16_t opcode);
+static char *disassemble_format17(uint16_t opcode);
 
 static uint16_t isolate_bits(uint16_t src, uint8_t start_bit, uint8_t end_bit);
 
@@ -85,6 +88,11 @@ void engine_init()
 	// format 15
 	disassembler_vector[24] = disassemble_format15;
 	disassembler_vector[25] = disassemble_format15;
+
+	// format 16
+	disassembler_vector[26] = disassemble_format16;
+	// formats 16 and 17
+	disassembler_vector[27] = disassemble_format16_17_decider;
 }
 
 char *engine_get_assembly(uint16_t opcode)
@@ -697,6 +705,94 @@ static char *disassemble_format15(uint16_t opcode)
 	i += snprintf(thumb_instruction + i - 2, MAX_LEN - i, "%s", "}");
 
 	return thumb_instruction;
+}
+
+static char *disassemble_format16_17_decider(uint16_t opcode)
+{
+	// if bits 8-11 are all 1s that's format 17 
+	if (isolate_bits(opcode, 8, 11) == 0xF)
+		return disassemble_format17(opcode);
+	else
+		return disassemble_format16(opcode);
+}
+
+static char *disassemble_format16(uint16_t opcode)
+{
+	uint16_t hold;
+	int i = 0;
+
+	memset(thumb_instruction, 0, MAX_LEN);
+
+	// isolate cond bits 8-11
+	hold = isolate_bits(opcode, 8, 11);
+	switch(hold) {
+		case 0:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "BEQ");
+			break;
+		case 1:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "BNE");
+			break;
+		case 2:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "BCS");
+			break;
+		case 3:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "BCC");
+			break;
+		case 4:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "BMI");
+			break;
+		case 5:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "BPL");
+			break;
+		case 6:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "BVS");
+			break;
+		case 7:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "BVC");
+			break;
+		case 8:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "BHI");
+			break;
+		case 9:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "BLS");
+			break;
+		case 10:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "BGE");
+			break;
+		case 11:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "BLT");
+			break;
+		case 12:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "BGT");
+			break;
+		case 13:
+			i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "BLE");
+			break;
+		default:
+			i += snprintf(thumb_instruction, MAX_LEN,
+				"ERROR: Format 16: Unknown op: %d", hold);
+			return thumb_instruction;
+	}
+
+	// islolate offset bits 0-6
+	hold = isolate_bits(opcode, 0, 6);
+	hold = hold << 1;
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "label ; label = PC");
+	// check sign bit 7
+	if (isolate_bits(opcode, 7, 7))
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "-");
+	else
+		i += snprintf(thumb_instruction + i, MAX_LEN - i, "%s ", "+");
+
+	i += snprintf(thumb_instruction + i, MAX_LEN - i, 
+		"%d. Note that PC is curr instruction + 4 due to instruction prefetch.", hold);
+
+	return thumb_instruction;
+}
+
+static char *disassemble_format17(uint16_t opcode)
+{
+	return NULL;
 }
 
 /***** helper functions *****/
