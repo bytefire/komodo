@@ -147,7 +147,7 @@ BEQ label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruct
 
 BNE label ;label = PC - 124. Note that PC is curr instruction + 4 due to instruction prefetch.
 1101.0001.1100.0010
-0xd184
+0xd1c2
 
 ******************************
 BCS label ;label = PC + 36. Note that PC is curr instruction + 4 due to instruction prefetch.
@@ -212,9 +212,11 @@ B label ;label = PC + (-24) - Note that PC = curr instruction + 4 due to instruc
 1110.0111.1111.0100
 0xe7f4
 
+--- format 19 ---
+BL label ; where label = PC + 23-bit num in two's complement - 11 high bits of the number are 0x24
+1111.0000.0010.0100
+0xf024
 
-
-
-01111011
-
-10000100
+BL label ; where label = PC + 23-bit num in two's complement - 12 low bits of the number are 0x36
+1111.1000.0001.1011
+0xf81b

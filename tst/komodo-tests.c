@@ -261,6 +261,22 @@ void test_format18()
 		"B label ;label = PC + (-24) - Note that PC = curr instruction + 4 due to instruction prefetch") == 0);
 }
 
+void test_format19()
+{
+	uint16_t opcode = 0xf024;
+	char *assembly = engine_get_assembly(opcode);
+
+	CU_ASSERT(strcmp(assembly,
+		"BL label ; where label = PC + 23-bit num in two's complement - 11 high bits of the number are 0x24")
+			== 0);
+
+	opcode = 0xf81b;
+	assembly = engine_get_assembly(opcode);
+	CU_ASSERT(strcmp(assembly,
+		"BL label ; where label = PC + 23-bit num in two's complement - 12 low bits of the number are 0x36")
+		== 0);
+}
+
 int setup_komodo_test_suite(void) {
 	CU_pSuite pSuite = NULL;
 	pSuite = CU_add_suite("Komodo Test Suite", init_komodo_test_suite, clean_komodo_test_suite);
@@ -280,7 +296,8 @@ int setup_komodo_test_suite(void) {
 		(NULL == CU_add_test(pSuite, "test of format 15", test_format15)) ||
 		(NULL == CU_add_test(pSuite, "test of format 16", test_format16)) ||
 		(NULL == CU_add_test(pSuite, "test of format 17", test_format17)) ||
-		(NULL == CU_add_test(pSuite, "test of format 18", test_format18))) {
+		(NULL == CU_add_test(pSuite, "test of format 18", test_format18)) ||
+		(NULL == CU_add_test(pSuite, "test of format 19", test_format19))) {
 		return -1;
 	}
 

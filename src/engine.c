@@ -848,7 +848,7 @@ static char *disassemble_format19(uint16_t opcode)
 			" - 11 high bits of the number are 0x%x", hold);
 	else
 		i += snprintf(thumb_instruction + i, MAX_LEN - i,
-			" - 12 high bits of the number are 0x%x", (hold << 1));
+			" - 12 low bits of the number are 0x%x", (hold << 1));
 
 	return thumb_instruction;
 }
