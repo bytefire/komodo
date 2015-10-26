@@ -31,6 +31,7 @@ static char *disassemble_format16_17_decider(uint16_t opcode);
 static char *disassemble_format16(uint16_t opcode);
 static char *disassemble_format17(uint16_t opcode);
 static char *disassemble_format18(uint16_t opcode);
+static char *disassemble_format19(uint16_t opcode);
 
 static uint16_t isolate_bits(uint16_t src, uint8_t start_bit, uint8_t end_bit);
 
@@ -97,6 +98,12 @@ void engine_init()
 
 	// format 18
 	disassembler_vector[28] = disassemble_format18;
+
+	// TODO: index 29 is invalid instruction
+	
+	// format 19
+	disassembler_vector[30] = disassemble_format19;
+	disassembler_vector[31] = disassemble_format19;
 }
 
 char *engine_get_assembly(uint16_t opcode)
@@ -821,6 +828,27 @@ static char *disassemble_format18(uint16_t opcode)
 	snprintf(thumb_instruction, MAX_LEN,
 		"B label ;label = PC + (%d) - Note that PC = curr instruction + 4 due to instruction prefetch",
 		(int16_t)hold);
+
+	return thumb_instruction;
+}
+
+static char *disassemble_format19(uint16_t opcode)
+{
+	uint16_t hold;
+	int i = 0;
+	
+	memset(thumb_instruction, 0, MAX_LEN);
+
+	i += snprintf(thumb_instruction + i, MAX_LEN - i,
+		"BL label ; where label = PC + 23-bit num in two's complement");
+
+	hold = isolate_bits(opcode, 0, 10);
+	if (isolate_bits(opcode, 11, 11) == 0)
+		i += snprintf(thumb_instruction + i, MAX_LEN - i,
+			" - 11 high bits of the number are 0x%x", hold);
+	else
+		i += snprintf(thumb_instruction + i, MAX_LEN - i,
+			" - 12 high bits of the number are 0x%x", (hold << 1));
 
 	return thumb_instruction;
 }
